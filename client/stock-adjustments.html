@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Reconcile and adjust product stock in Stockly">
+    <title>Stock Adjustments | Stockly — Inventory Management</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/auth.js" defer></script>
+    <script src="./js/stock-adjustments.js" defer></script>
+  </head>
+  <body class="auth-pending" data-auth-guard="true">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="./index.html" aria-label="Stockly home">
+          <img class="brand-logo" src="./assets/stockly-logo.png" alt="Stockly Inventory Management">
+          <span class="brand-caption" aria-hidden="true">INVENTORY MANAGEMENT</span>
+        </a>
+
+        <p class="nav-heading">WORKSPACE</p>
+        <nav class="main-nav">
+          <a class="nav-link" href="./index.html#dashboard"><span class="nav-icon" aria-hidden="true">▦</span>Dashboard</a>
+          <a class="nav-link" href="./products.html"><span class="nav-icon" aria-hidden="true">▤</span>Products</a>
+          <a class="nav-link" href="./categories.html"><span class="nav-icon" aria-hidden="true">▣</span>Categories</a>
+          <a class="nav-link is-active" href="./stock-adjustments.html" aria-current="page"><span class="nav-icon" aria-hidden="true">↕</span>Stock Adjustments</a>
+          <a class="nav-link" href="./purchases.html"><span class="nav-icon" aria-hidden="true">⇧</span>Purchases</a>
+          <a class="nav-link" href="./sales.html"><span class="nav-icon" aria-hidden="true">⇩</span>Sales</a>
+          <a class="nav-link" href="./returns.html"><span class="nav-icon" aria-hidden="true">↩</span>Returns &amp; Refunds</a>
+          <a class="nav-link" href="./customers.html"><span class="nav-icon" aria-hidden="true">♙</span>Customers</a>
+          <a class="nav-link" href="./suppliers.html"><span class="nav-icon" aria-hidden="true">▧</span>Suppliers</a>
+          <a class="nav-link" href="./payments.html"><span class="nav-icon" aria-hidden="true">₹</span>Payments</a>
+          <a class="nav-link" href="./reports.html"><span class="nav-icon" aria-hidden="true">▥</span>Reports</a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a class="nav-link" href="./settings.html"><span class="nav-icon" aria-hidden="true">⚙</span>Settings</a>
+          <p>Inventory at a glance</p>
+        </div>
+      </aside>
+
+      <div class="main-column">
+        <header class="topbar">
+          <a class="mobile-brand" href="./index.html" aria-label="Stockly home"><img src="./assets/stockly-logo.png" alt="Stockly"></a>
+          <div class="topbar-spacer"></div>
+          <div class="profile" data-auth-account aria-label="Loading account">
+            <span class="profile-avatar" data-auth-avatar aria-hidden="true">…</span>
+            <span class="profile-details">
+              <span class="profile-name" data-auth-username>Loading account…</span>
+              <span class="profile-role" data-auth-role></span>
+            </span>
+            <button class="logout-button" type="button" data-auth-logout>Log out</button>
+          </div>
+        </header>
+
+        <main class="dashboard stock-adjustments-page">
+          <section class="page-heading" aria-labelledby="page-title">
+            <div>
+              <p class="eyebrow">INVENTORY</p>
+              <h1 id="page-title">Stock Adjustments</h1>
+              <p class="page-subtitle">Reconcile counted stock and record damaged, missing, or found goods.</p>
+            </div>
+          </section>
+
+          <p class="page-status" id="adjustment-status" role="status" aria-live="polite">Loading products…</p>
+
+          <section class="panel adjustment-panel" aria-labelledby="adjustment-form-title">
+            <div class="panel-heading">
+              <div>
+                <h2 id="adjustment-form-title">Record an adjustment</h2>
+                <p>Every adjustment is saved to stock movement history.</p>
+              </div>
+            </div>
+            <form id="adjustment-form" class="adjustment-form" novalidate>
+              <div class="form-row">
+                <label class="form-field">
+                  <span>Product <span class="required-mark">*</span></span>
+                  <select id="adjustment-product" name="product_id" required>
+                    <option value="">Select a product</option>
+                  </select>
+                </label>
+                <label class="form-field">
+                  <span>Current stock</span>
+                  <input id="current-stock" type="text" value="—" readonly>
+                </label>
+              </div>
+              <div class="form-row">
+                <label class="form-field">
+                  <span>Adjustment type <span class="required-mark">*</span></span>
+                  <select id="adjustment-type" name="adjustment_type" required>
+                    <option value="increase">Increase stock</option>
+                    <option value="decrease">Decrease stock</option>
+                  </select>
+                </label>
+                <label class="form-field">
+                  <span>Quantity <span class="required-mark">*</span></span>
+                  <input id="adjustment-quantity" name="quantity" type="number" min="0.001" max="999999999.999" step="0.001" required>
+                </label>
+              </div>
+              <div class="form-row">
+                <label class="form-field">
+                  <span>Reason <span class="required-mark">*</span></span>
+                  <select id="adjustment-reason" name="reason" required>
+                    <option value="">Select a reason</option>
+                    <option value="physical_count">Physical stock count</option>
+                    <option value="damaged_goods">Damaged goods</option>
+                    <option value="expired_goods">Expired goods</option>
+                    <option value="lost_missing">Lost or missing</option>
+                    <option value="found_stock">Found stock</option>
+                    <option value="manual_correction">Manual correction</option>
+                    <option value="other">Other</option>
+                  </select>
+                </label>
+                <label class="form-field">
+                  <span>Note</span>
+                  <input id="adjustment-note" name="note" type="text" maxlength="1000" placeholder="Optional details for the audit history">
+                </label>
+              </div>
+
+              <div class="adjustment-preview" aria-live="polite" aria-label="Stock change preview">
+                <div><span>Current stock</span><strong id="preview-current">—</strong></div>
+                <div><span>Adjustment</span><strong id="preview-change">—</strong></div>
+                <div><span>New stock</span><strong id="preview-new">—</strong></div>
+              </div>
+              <p class="form-message adjustment-form-message" id="adjustment-form-message" role="alert" hidden></p>
+              <div class="adjustment-actions">
+                <p class="form-hint">Stock is updated by the database stock-movement trigger, not by editing the product directly.</p>
+                <button class="primary-button" id="submit-adjustment" type="submit">Review adjustment</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel adjustment-history-panel" aria-labelledby="history-title">
+            <div class="panel-heading adjustment-history-heading">
+              <div>
+                <h2 id="history-title">Adjustment history</h2>
+                <p>Auditable stock increases and decreases, newest first.</p>
+              </div>
+              <button class="refresh-button" id="refresh-history" type="button"><span aria-hidden="true">↻</span> Refresh</button>
+            </div>
+            <div class="adjustment-history-toolbar">
+              <label class="search-field">
+                <span class="visually-hidden">Search adjustment history</span>
+                <span class="search-icon" aria-hidden="true">⌕</span>
+                <input id="history-search" type="search" placeholder="Search product, reason, note, or user" autocomplete="off">
+              </label>
+              <label class="history-product-filter">
+                <span class="visually-hidden">Filter history by product</span>
+                <select id="history-product-filter">
+                  <option value="">All products</option>
+                </select>
+              </label>
+            </div>
+            <p class="page-status history-status" id="history-status" role="status" aria-live="polite">Loading adjustment history…</p>
+            <div class="table-wrap">
+              <table class="adjustment-history-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Date and time</th>
+                    <th scope="col">Product</th>
+                    <th scope="col">Type</th>
+                    <th scope="col" class="numeric">Quantity</th>
+                    <th scope="col">Reason</th>
+                    <th scope="col">Note</th>
+                    <th scope="col">Performed by</th>
+                  </tr>
+                </thead>
+                <tbody id="history-body">
+                  <tr><td class="empty-cell" colspan="7">Loading adjustment history…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <footer class="page-footer">Stockly</footer>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

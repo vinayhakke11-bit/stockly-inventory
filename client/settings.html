@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Manage shop information used on Stockly receipts">
+    <title>Settings | Stockly — Inventory Management</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/auth.js" defer></script>
+    <script src="./js/settings.js" defer></script>
+  </head>
+  <body class="auth-pending" data-auth-guard="true">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="./index.html" aria-label="Stockly home">
+          <img class="brand-logo" src="./assets/stockly-logo.png" alt="Stockly Inventory Management">
+          <span class="brand-caption" aria-hidden="true">INVENTORY MANAGEMENT</span>
+        </a>
+        <p class="nav-heading">WORKSPACE</p>
+        <nav class="main-nav">
+          <a class="nav-link" href="./index.html#dashboard"><span class="nav-icon" aria-hidden="true">▦</span>Dashboard</a>
+          <a class="nav-link" href="./products.html"><span class="nav-icon" aria-hidden="true">▤</span>Products</a>
+          <a class="nav-link" href="./categories.html"><span class="nav-icon" aria-hidden="true">▣</span>Categories</a>
+          <a class="nav-link" href="./stock-adjustments.html"><span class="nav-icon" aria-hidden="true">↕</span>Stock Adjustments</a>
+          <a class="nav-link" href="./purchases.html"><span class="nav-icon" aria-hidden="true">⇧</span>Purchases</a>
+          <a class="nav-link" href="./sales.html"><span class="nav-icon" aria-hidden="true">⇩</span>Sales</a>
+          <a class="nav-link" href="./returns.html"><span class="nav-icon" aria-hidden="true">↩</span>Returns &amp; Refunds</a>
+          <a class="nav-link" href="./customers.html"><span class="nav-icon" aria-hidden="true">♙</span>Customers</a>
+          <a class="nav-link" href="./suppliers.html"><span class="nav-icon" aria-hidden="true">▧</span>Suppliers</a>
+          <a class="nav-link" href="./payments.html"><span class="nav-icon" aria-hidden="true">₹</span>Payments</a>
+          <a class="nav-link" href="./reports.html"><span class="nav-icon" aria-hidden="true">▥</span>Reports</a>
+        </nav>
+        <div class="sidebar-footer">
+          <a class="nav-link is-active" href="./settings.html" aria-current="page"><span class="nav-icon" aria-hidden="true">⚙</span>Settings</a>
+          <p>Inventory at a glance</p>
+        </div>
+      </aside>
+
+      <div class="main-column">
+        <header class="topbar">
+          <a class="mobile-brand" href="./index.html" aria-label="Stockly home"><img src="./assets/stockly-logo.png" alt="Stockly"></a>
+          <div class="topbar-spacer"></div>
+          <div class="profile" data-auth-account aria-label="Loading account">
+            <span class="profile-avatar" data-auth-avatar aria-hidden="true">…</span>
+            <span class="profile-details">
+              <span class="profile-name" data-auth-username>Loading account…</span>
+              <span class="profile-role" data-auth-role></span>
+            </span>
+            <button class="logout-button" type="button" data-auth-logout>Log out</button>
+          </div>
+        </header>
+
+        <main class="dashboard settings-page">
+          <section class="page-heading" aria-labelledby="page-title">
+            <div>
+              <p class="eyebrow">SHOP CONFIGURATION</p>
+              <h1 id="page-title">Settings</h1>
+              <p class="page-subtitle">Manage the shop information shown on newly issued receipts.</p>
+            </div>
+          </section>
+
+          <p class="page-status" id="settings-status" role="status" aria-live="polite">Loading shop information…</p>
+
+          <section class="panel settings-panel" aria-labelledby="shop-info-title">
+            <div class="panel-heading">
+              <div>
+                <h2 id="shop-info-title">Shop Information</h2>
+                <p>Update your shop identity and contact information.</p>
+              </div>
+            </div>
+            <form id="settings-form" class="settings-form" novalidate>
+              <p class="form-message settings-form-message" id="settings-form-message" role="alert" hidden></p>
+              <label class="form-field">
+                <span>Shop name <span class="required-mark">*</span></span>
+                <input name="name" type="text" maxlength="150" required autocomplete="organization">
+              </label>
+              <label class="form-field">
+                <span>Shop address</span>
+                <textarea name="address" rows="3" maxlength="2000" autocomplete="street-address"></textarea>
+              </label>
+              <label class="form-field">
+                <span>Phone number</span>
+                <input name="phone" type="tel" maxlength="30" autocomplete="tel">
+              </label>
+              <p class="form-hint">Shop name, address, and phone are saved for future receipts. Existing receipts keep their original shop information. Currency is currently fixed to INR by the receipt system.</p>
+              <div class="settings-actions">
+                <button class="secondary-button" id="reset-settings" type="button">Reset changes</button>
+                <button class="primary-button" id="save-settings" type="submit">Save changes</button>
+              </div>
+            </form>
+          </section>
+          <footer class="page-footer">Stockly</footer>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

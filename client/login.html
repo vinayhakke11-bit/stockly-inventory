@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Sign in to Stockly inventory management">
+    <title>Sign in | Stockly — Inventory Management</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/auth.js" defer></script>
+    <script src="./js/login.js" defer></script>
+  </head>
+  <body class="login-page">
+    <main class="login-shell">
+      <a class="brand login-brand" href="./login.html" aria-label="Stockly">
+        <img class="brand-logo" src="./assets/stockly-logo.png" alt="Stockly Inventory Management">
+      </a>
+
+      <section class="login-panel" aria-labelledby="login-title">
+        <p class="eyebrow">SHOP WORKSPACE</p>
+        <h1 id="login-title">Sign in to Stockly</h1>
+        <p class="login-subtitle">Use your shop account to continue.</p>
+
+        <p class="login-message" id="login-message" role="alert" aria-live="polite" hidden></p>
+
+        <form id="login-form">
+          <label class="form-field" for="login-identifier">
+            <span>Username or email</span>
+            <input
+              id="login-identifier"
+              name="username"
+              type="text"
+              maxlength="255"
+              autocomplete="username"
+              required
+              autofocus
+            >
+          </label>
+
+          <label class="form-field" for="login-password">
+            <span>Password</span>
+            <span class="password-input-wrap">
+              <input
+                id="login-password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+              >
+              <button
+                class="password-toggle"
+                id="toggle-password"
+                type="button"
+                aria-label="Show password"
+              >Show</button>
+            </span>
+          </label>
+
+          <button class="primary-button login-submit" id="login-button" type="submit">Sign in</button>
+        </form>
+      </section>
+
+      <p class="login-footer">Stockly · Inventory Management</p>
+    </main>
+  </body>
+</html>

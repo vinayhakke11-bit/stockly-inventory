@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Create and manage sales in Stockly">
+    <title>Sales | Stockly — Inventory Management</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/auth.js" defer></script>
+    <script src="./js/sales.js" defer></script>
+  </head>
+  <body class="auth-pending" data-auth-guard="true">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="./index.html" aria-label="Stockly home">
+          <img class="brand-logo" src="./assets/stockly-logo.png" alt="Stockly Inventory Management">
+          <span class="brand-caption" aria-hidden="true">INVENTORY MANAGEMENT</span>
+        </a>
+
+        <p class="nav-heading">WORKSPACE</p>
+        <nav class="main-nav">
+          <a class="nav-link" href="./index.html#dashboard"><span class="nav-icon" aria-hidden="true">▦</span>Dashboard</a>
+          <a class="nav-link" href="./products.html"><span class="nav-icon" aria-hidden="true">▤</span>Products</a>
+          <a class="nav-link" href="./categories.html"><span class="nav-icon" aria-hidden="true">▣</span>Categories</a>
+          <a class="nav-link" href="./stock-adjustments.html"><span class="nav-icon" aria-hidden="true">↕</span>Stock Adjustments</a>
+          <a class="nav-link" href="./purchases.html"><span class="nav-icon" aria-hidden="true">⇧</span>Purchases</a>
+          <a class="nav-link is-active" href="./sales.html" aria-current="page"><span class="nav-icon" aria-hidden="true">⇩</span>Sales</a>
+          <a class="nav-link" href="./returns.html"><span class="nav-icon" aria-hidden="true">↩</span>Returns &amp; Refunds</a>
+          <a class="nav-link" href="./customers.html"><span class="nav-icon" aria-hidden="true">♙</span>Customers</a>
+          <a class="nav-link" href="./suppliers.html"><span class="nav-icon" aria-hidden="true">▧</span>Suppliers</a>
+          <a class="nav-link" href="./payments.html"><span class="nav-icon" aria-hidden="true">₹</span>Payments</a>
+          <a class="nav-link" href="./reports.html"><span class="nav-icon" aria-hidden="true">▥</span>Reports</a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a class="nav-link" href="./settings.html"><span class="nav-icon" aria-hidden="true">⚙</span>Settings</a>
+          <p>Inventory at a glance</p>
+        </div>
+      </aside>
+
+      <div class="main-column">
+        <header class="topbar">
+          <a class="mobile-brand" href="./index.html" aria-label="Stockly home"><img src="./assets/stockly-logo.png" alt="Stockly"></a>
+          <div class="topbar-spacer"></div>
+          <div class="profile" data-auth-account aria-label="Loading account">
+            <span class="profile-avatar" data-auth-avatar aria-hidden="true">…</span>
+            <span class="profile-details">
+              <span class="profile-name" data-auth-username>Loading account…</span>
+              <span class="profile-role" data-auth-role></span>
+            </span>
+            <button class="logout-button" type="button" data-auth-logout>Log out</button>
+          </div>
+        </header>
+
+        <main class="dashboard sales-page">
+          <section class="page-heading" aria-labelledby="page-title">
+            <div>
+              <p class="eyebrow">TRANSACTIONS</p>
+              <h1 id="page-title">Sales</h1>
+              <p class="page-subtitle">Record customer purchases and complete sales when checkout is ready.</p>
+            </div>
+            <button class="primary-button" id="new-sale-button" type="button">+ New sale</button>
+          </section>
+
+          <p class="page-status" id="sale-status" role="status" aria-live="polite">Loading sales…</p>
+
+          <section class="panel sales-panel" aria-label="Sales list">
+            <div class="table-wrap">
+              <table class="sales-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Sale ID</th>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="numeric">Total</th>
+                    <th scope="col">Date</th>
+                    <th scope="col" class="actions-heading">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="sales-body">
+                  <tr><td class="empty-cell" colspan="6">Loading sales…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <footer class="page-footer">Stockly</footer>
+        </main>
+      </div>
+    </div>
+
+    <dialog class="product-dialog sale-dialog" id="sale-dialog" aria-labelledby="sale-dialog-title">
+      <form id="sale-form" novalidate>
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">SALE DETAILS</p>
+            <h2 id="sale-dialog-title">New sale</h2>
+          </div>
+          <button class="dialog-close" id="close-sale-dialog" type="button" aria-label="Close form">×</button>
+        </div>
+        <p class="form-message" id="sale-form-message" role="alert" hidden></p>
+
+        <div class="form-row">
+          <label class="form-field">
+            <span>Customer</span>
+            <select name="customer_id">
+              <option value="">Walk-in Customer</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="sale-items-heading">
+          <div>
+            <h3>Items</h3>
+            <p>Choose each product once; combine duplicate quantities.</p>
+          </div>
+          <button class="secondary-button" id="add-sale-item" type="button">+ Add item</button>
+        </div>
+        <div class="table-wrap sale-items-wrap">
+          <table class="sale-entry-table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col" class="numeric">Quantity</th>
+                <th scope="col" class="numeric">Unit price</th>
+                <th scope="col" class="numeric">Line total</th>
+                <th scope="col"><span class="visually-hidden">Remove</span></th>
+              </tr>
+            </thead>
+            <tbody id="sale-item-rows"></tbody>
+          </table>
+        </div>
+        <div class="sale-total-row">
+          <span>Grand total</span>
+          <strong id="sale-total">₹0.00</strong>
+        </div>
+        <p class="form-hint">This sale will be saved as a draft. Stock changes only after you complete the sale.</p>
+
+        <div class="dialog-actions">
+          <button class="secondary-button" id="cancel-sale-form" type="button">Cancel</button>
+          <button class="primary-button" id="save-sale-button" type="submit">Save draft</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="product-dialog sale-dialog sale-detail-dialog" id="sale-detail-dialog" aria-labelledby="sale-detail-title">
+      <div class="sale-details-content">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">SALE RECORD</p>
+            <h2 id="sale-detail-title">Sale details</h2>
+          </div>
+          <button class="dialog-close" id="close-sale-details" type="button" aria-label="Close details">×</button>
+        </div>
+        <p class="form-message" id="sale-detail-message" role="alert" hidden></p>
+        <dl class="sale-summary">
+          <div><dt>Customer</dt><dd id="detail-customer">—</dd></div>
+          <div><dt>Status</dt><dd id="detail-status">—</dd></div>
+          <div><dt>Created date</dt><dd id="detail-date">—</dd></div>
+        </dl>
+        <div class="table-wrap sale-detail-items-wrap">
+          <table class="sale-detail-items-table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">SKU</th>
+                <th scope="col" class="numeric">Quantity</th>
+                <th scope="col" class="numeric">Unit price</th>
+                <th scope="col" class="numeric">Line total</th>
+              </tr>
+            </thead>
+            <tbody id="sale-detail-items"></tbody>
+          </table>
+        </div>
+        <div class="sale-total-row detail-sale-total-row">
+          <span>Total amount</span>
+          <strong id="detail-total">—</strong>
+        </div>
+        <dl class="sale-payment-summary" id="sale-payment-summary" hidden>
+          <div><dt>Amount paid</dt><dd id="detail-amount-paid">—</dd></div>
+          <div><dt>Outstanding</dt><dd id="detail-outstanding">—</dd></div>
+          <div><dt>Payment status</dt><dd><span class="status-badge" id="detail-payment-status">—</span></dd></div>
+        </dl>
+        <section class="sale-payment-section" id="payment-history-section" hidden aria-labelledby="payment-history-title">
+          <div class="sale-payment-heading">
+            <h3 id="payment-history-title">Payment History</h3>
+            <p class="payment-history-message" id="payment-history-message" role="status" aria-live="polite"></p>
+          </div>
+          <div class="table-wrap payment-history-wrap">
+            <table class="payment-history-table">
+              <thead>
+                <tr>
+                  <th scope="col">Amount</th>
+                  <th scope="col">Method</th>
+                  <th scope="col">Reference</th>
+                  <th scope="col">Date and time</th>
+                </tr>
+              </thead>
+              <tbody id="payment-history-rows"></tbody>
+            </table>
+          </div>
+        </section>
+        <section class="sale-payment-entry" id="initial-payment-section" hidden aria-labelledby="initial-payment-title">
+          <h3 id="initial-payment-title">Payment at checkout <span>(optional)</span></h3>
+          <p>Leave the amount blank or enter 0 for an unpaid sale.</p>
+          <form id="initial-payment-form" novalidate>
+            <div class="sale-payment-fields">
+              <label class="form-field">
+                <span>Amount paid</span>
+                <input id="initial-payment-amount" name="amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00">
+              </label>
+              <label class="form-field">
+                <span>Payment method</span>
+                <select id="initial-payment-method" name="method">
+                  <option value="cash">Cash</option>
+                  <option value="card">Card</option>
+                  <option value="bank_transfer">Bank transfer</option>
+                  <option value="mobile_money">Mobile money</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+              <label class="form-field sale-payment-reference">
+                <span>Reference <span>(optional)</span></span>
+                <input id="initial-payment-reference" name="reference" type="text" maxlength="100" autocomplete="off">
+              </label>
+            </div>
+            <p class="form-message sale-payment-message" id="initial-payment-message" role="alert" hidden></p>
+            <div class="dialog-actions">
+              <button class="secondary-button" id="cancel-initial-payment" type="button">Back</button>
+              <button class="primary-button" id="confirm-sale-completion" type="submit">Complete sale</button>
+            </div>
+          </form>
+        </section>
+        <section class="sale-payment-entry" id="later-payment-section" hidden aria-labelledby="later-payment-title">
+          <form id="later-payment-form" novalidate>
+            <h3 id="later-payment-title">Record Payment</h3>
+            <div class="sale-payment-fields">
+              <label class="form-field">
+                <span>Amount</span>
+                <input id="later-payment-amount" name="amount" type="number" min="0.01" step="0.01" inputmode="decimal" required>
+              </label>
+              <label class="form-field">
+                <span>Payment method</span>
+                <select id="later-payment-method" name="method" required>
+                  <option value="cash">Cash</option>
+                  <option value="card">Card</option>
+                  <option value="bank_transfer">Bank transfer</option>
+                  <option value="mobile_money">Mobile money</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+              <label class="form-field sale-payment-reference">
+                <span>Reference <span>(optional)</span></span>
+                <input id="later-payment-reference" name="reference" type="text" maxlength="100" autocomplete="off">
+              </label>
+            </div>
+            <p class="form-message sale-payment-message" id="later-payment-message" role="alert" hidden></p>
+            <div class="dialog-actions">
+              <button class="secondary-button" id="cancel-later-payment" type="button">Cancel</button>
+              <button class="primary-button" id="submit-later-payment" type="submit">Record Payment</button>
+            </div>
+          </form>
+        </section>
+        <p class="page-status sale-detail-status" id="sale-action-status" role="status" aria-live="polite"></p>
+        <div class="dialog-actions sale-detail-actions" id="sale-detail-actions">
+          <button class="secondary-button" id="close-sale-details-button" type="button">Close</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="receipt-dialog" id="receipt-dialog" aria-labelledby="receipt-title">
+      <div class="receipt-content">
+        <div class="receipt-screen-heading">
+          <h2 id="receipt-title">Receipt</h2>
+          <button class="dialog-close" id="close-receipt" type="button" aria-label="Close receipt">×</button>
+        </div>
+        <p class="receipt-message" id="receipt-message" role="status" aria-live="polite">Loading receipt…</p>
+        <article class="receipt-paper" id="receipt-paper" hidden aria-label="Sale receipt">
+          <header class="receipt-shop">
+            <h3 id="receipt-shop-name"></h3>
+            <p id="receipt-shop-address"></p>
+            <p id="receipt-shop-phone"></p>
+          </header>
+          <div class="receipt-heading">
+            <strong>SALES RECEIPT</strong>
+            <span id="receipt-number"></span>
+          </div>
+          <dl class="receipt-meta">
+            <div><dt>Date</dt><dd id="receipt-date"></dd></div>
+            <div><dt>Cashier</dt><dd id="receipt-cashier"></dd></div>
+          </dl>
+          <section class="receipt-customer" id="receipt-customer-section" aria-label="Customer">
+            <h4>Customer</h4>
+            <p id="receipt-customer-name"></p>
+            <p id="receipt-customer-phone"></p>
+            <p id="receipt-customer-email"></p>
+            <p id="receipt-customer-address"></p>
+          </section>
+          <div class="receipt-items-wrap">
+            <table class="receipt-items-table">
+              <thead>
+                <tr>
+                  <th scope="col">Item</th>
+                  <th scope="col" class="numeric">Qty</th>
+                  <th scope="col" class="numeric">Price</th>
+                  <th scope="col" class="numeric">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="receipt-items"></tbody>
+            </table>
+          </div>
+          <dl class="receipt-totals">
+            <div><dt>Subtotal</dt><dd id="receipt-subtotal"></dd></div>
+            <div class="receipt-total"><dt>Total</dt><dd id="receipt-total"></dd></div>
+          </dl>
+          <section class="receipt-payment">
+            <h4>Payment</h4>
+            <ul id="receipt-payments"></ul>
+            <p id="receipt-no-payment"></p>
+          </section>
+          <dl class="receipt-balance">
+            <div><dt>Amount paid</dt><dd id="receipt-amount-paid"></dd></div>
+            <div class="receipt-outstanding"><dt>Outstanding / credit</dt><dd id="receipt-outstanding"></dd></div>
+          </dl>
+          <p class="receipt-thanks">Thank you for your business.</p>
+        </article>
+        <div class="dialog-actions receipt-actions">
+          <button class="secondary-button" id="print-receipt" type="button" disabled>Print Receipt</button>
+          <button class="primary-button" id="close-receipt-button" type="button">Close</button>
+        </div>
+      </div>
+    </dialog>
+  </body>
+</html>

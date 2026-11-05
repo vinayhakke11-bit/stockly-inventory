@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Stockly inventory management dashboard">
+    <title>Stockly — Inventory Management</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/auth.js" defer></script>
+    <script src="./js/dashboard.js" defer></script>
+  </head>
+  <body class="auth-pending" data-auth-guard="true">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="./index.html" aria-label="Stockly home">
+          <img class="brand-logo" src="./assets/stockly-logo.png" alt="Stockly Inventory Management">
+          <span class="brand-caption" aria-hidden="true">INVENTORY MANAGEMENT</span>
+        </a>
+
+        <p class="nav-heading">WORKSPACE</p>
+        <nav class="main-nav">
+          <a class="nav-link is-active" href="#dashboard" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg>
+            </span>
+            Dashboard
+          </a>
+          <a class="nav-link" href="./products.html"><span class="nav-icon" aria-hidden="true">▤</span>Products</a>
+          <a class="nav-link" href="./categories.html"><span class="nav-icon" aria-hidden="true">▣</span>Categories</a>
+          <a class="nav-link" href="./stock-adjustments.html"><span class="nav-icon" aria-hidden="true">↕</span>Stock Adjustments</a>
+          <a class="nav-link" href="./purchases.html"><span class="nav-icon" aria-hidden="true">⇧</span>Purchases</a>
+          <a class="nav-link" href="./sales.html"><span class="nav-icon" aria-hidden="true">⇩</span>Sales</a>
+          <a class="nav-link" href="./returns.html"><span class="nav-icon" aria-hidden="true">↩</span>Returns &amp; Refunds</a>
+          <a class="nav-link" href="./customers.html"><span class="nav-icon" aria-hidden="true">♙</span>Customers</a>
+          <a class="nav-link" href="./suppliers.html"><span class="nav-icon" aria-hidden="true">▧</span>Suppliers</a>
+          <a class="nav-link" href="./payments.html"><span class="nav-icon" aria-hidden="true">₹</span>Payments</a>
+          <a class="nav-link" href="./reports.html"><span class="nav-icon" aria-hidden="true">▥</span>Reports</a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a class="nav-link" href="./settings.html">
+            <span class="nav-icon" aria-hidden="true">⚙</span>Settings
+          </a>
+          <p>Inventory at a glance</p>
+        </div>
+      </aside>
+
+      <div class="main-column">
+        <header class="topbar">
+          <a class="mobile-brand" href="./index.html" aria-label="Stockly home"><img src="./assets/stockly-logo.png" alt="Stockly"></a>
+          <div class="topbar-spacer"></div>
+          <div class="profile" data-auth-account aria-label="Loading account">
+            <span class="profile-avatar" data-auth-avatar aria-hidden="true">…</span>
+            <span class="profile-details">
+              <span class="profile-name" data-auth-username>Loading account…</span>
+              <span class="profile-role" data-auth-role></span>
+            </span>
+            <button class="logout-button" type="button" data-auth-logout>Log out</button>
+          </div>
+        </header>
+
+        <main class="dashboard" id="dashboard">
+          <section class="page-heading" aria-labelledby="page-title">
+            <div>
+              <p class="eyebrow">OVERVIEW</p>
+              <h1 id="page-title">Dashboard</h1>
+              <p class="page-subtitle">A clear view of your shop today.</p>
+            </div>
+            <button class="refresh-button" id="refresh-button" type="button">
+              <span aria-hidden="true">↻</span>
+              Refresh
+            </button>
+          </section>
+
+          <p class="page-status" id="page-status" role="status" aria-live="polite">Loading dashboard…</p>
+
+          <section class="summary-grid" aria-label="Shop summary">
+            <article class="summary-card">
+              <p class="card-label">Total products</p>
+              <p class="card-value" id="product-count">Loading…</p>
+              <p class="card-note"><span id="active-product-count">—</span> active</p>
+            </article>
+            <article class="summary-card">
+              <p class="card-label">Total stock</p>
+              <p class="card-value" id="total-stock-quantity">Loading…</p>
+              <p class="card-note">Units on hand</p>
+            </article>
+            <article class="summary-card summary-card-warning">
+              <p class="card-label">Low stock</p>
+              <p class="card-value" id="low-stock-count">Loading…</p>
+              <p class="card-note">Products need attention</p>
+            </article>
+            <article class="summary-card">
+              <p class="card-label">Inventory value</p>
+              <p class="card-value" id="retail-inventory-value">Loading…</p>
+              <p class="card-note">At retail price</p>
+            </article>
+            <article class="summary-card">
+              <p class="card-label">Today's sales</p>
+              <p class="card-value" id="net-sales">Loading…</p>
+              <p class="card-note" id="sales-breakdown">Net sales</p>
+            </article>
+            <article class="summary-card">
+              <p class="card-label">Today's purchases</p>
+              <p class="card-value" id="today-purchases">Loading…</p>
+              <p class="card-note">Received today</p>
+            </article>
+            <article class="summary-card">
+              <p class="card-label">Customer credit</p>
+              <p class="card-value" id="outstanding-balance">Loading…</p>
+              <p class="card-note">Outstanding balance</p>
+            </article>
+          </section>
+
+          <section class="attention-panel" id="low-stock-panel" aria-labelledby="low-stock-title" hidden>
+            <div class="attention-icon" aria-hidden="true">!</div>
+            <div>
+              <h2 id="low-stock-title">Low-stock attention</h2>
+              <p id="low-stock-message"></p>
+            </div>
+          </section>
+
+          <div class="content-grid">
+            <section class="panel panel-wide" aria-labelledby="recent-sales-title">
+              <div class="panel-heading">
+                <div>
+                  <h2 id="recent-sales-title">Recent sales</h2>
+                  <p>Latest sale activity</p>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Sale ID</th>
+                      <th scope="col">Customer</th>
+                      <th scope="col">Type</th>
+                      <th scope="col">Status</th>
+                      <th scope="col" class="numeric">Amount</th>
+                      <th scope="col">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recent-sales-body">
+                    <tr><td class="empty-cell" colspan="6">Loading sales…</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="panel panel-wide" aria-labelledby="stock-movements-title">
+              <div class="panel-heading">
+                <div>
+                  <h2 id="stock-movements-title">Recent stock movements</h2>
+                  <p>Latest inventory changes</p>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Product</th>
+                      <th scope="col">Movement</th>
+                      <th scope="col" class="numeric">Quantity</th>
+                      <th scope="col">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="stock-movements-body">
+                    <tr><td class="empty-cell" colspan="4">Loading movements…</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="panel top-products-panel" aria-labelledby="top-products-title">
+              <div class="panel-heading">
+                <div>
+                  <h2 id="top-products-title">Top-selling products</h2>
+                  <p>Net quantity sold</p>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Product</th>
+                      <th scope="col" class="numeric">Quantity sold</th>
+                    </tr>
+                  </thead>
+                  <tbody id="top-products-body">
+                    <tr><td class="empty-cell" colspan="2">Loading products…</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+          <footer class="page-footer">Stockly</footer>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

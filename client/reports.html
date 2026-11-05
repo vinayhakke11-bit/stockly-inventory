@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Review sales, purchasing, payments, returns, and inventory reports in Stockly">
+    <title>Reports | Stockly — Inventory Management</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/auth.js" defer></script>
+    <script src="./js/reports.js" defer></script>
+  </head>
+  <body class="auth-pending" data-auth-guard="true">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="./index.html" aria-label="Stockly home">
+          <img class="brand-logo" src="./assets/stockly-logo.png" alt="Stockly Inventory Management">
+          <span class="brand-caption" aria-hidden="true">INVENTORY MANAGEMENT</span>
+        </a>
+        <p class="nav-heading">WORKSPACE</p>
+        <nav class="main-nav">
+          <a class="nav-link" href="./index.html#dashboard"><span class="nav-icon" aria-hidden="true">▦</span>Dashboard</a>
+          <a class="nav-link" href="./products.html"><span class="nav-icon" aria-hidden="true">▤</span>Products</a>
+          <a class="nav-link" href="./categories.html"><span class="nav-icon" aria-hidden="true">▣</span>Categories</a>
+          <a class="nav-link" href="./stock-adjustments.html"><span class="nav-icon" aria-hidden="true">↕</span>Stock Adjustments</a>
+          <a class="nav-link" href="./purchases.html"><span class="nav-icon" aria-hidden="true">⇧</span>Purchases</a>
+          <a class="nav-link" href="./sales.html"><span class="nav-icon" aria-hidden="true">⇩</span>Sales</a>
+          <a class="nav-link" href="./returns.html"><span class="nav-icon" aria-hidden="true">↩</span>Returns &amp; Refunds</a>
+          <a class="nav-link" href="./customers.html"><span class="nav-icon" aria-hidden="true">♙</span>Customers</a>
+          <a class="nav-link" href="./suppliers.html"><span class="nav-icon" aria-hidden="true">▧</span>Suppliers</a>
+          <a class="nav-link" href="./payments.html"><span class="nav-icon" aria-hidden="true">₹</span>Payments</a>
+          <a class="nav-link is-active" href="./reports.html" aria-current="page"><span class="nav-icon" aria-hidden="true">▥</span>Reports</a>
+        </nav>
+        <div class="sidebar-footer">
+          <a class="nav-link" href="./settings.html"><span class="nav-icon" aria-hidden="true">⚙</span>Settings</a>
+          <p>Inventory at a glance</p>
+        </div>
+      </aside>
+
+      <div class="main-column">
+        <header class="topbar">
+          <a class="mobile-brand" href="./index.html" aria-label="Stockly home"><img src="./assets/stockly-logo.png" alt="Stockly"></a>
+          <div class="topbar-spacer"></div>
+          <div class="profile" data-auth-account aria-label="Loading account">
+            <span class="profile-avatar" data-auth-avatar aria-hidden="true">…</span>
+            <span class="profile-details">
+              <span class="profile-name" data-auth-username>Loading account…</span>
+              <span class="profile-role" data-auth-role></span>
+            </span>
+            <button class="logout-button" type="button" data-auth-logout>Log out</button>
+          </div>
+        </header>
+
+        <main class="dashboard reports-page">
+          <section class="page-heading" aria-labelledby="page-title">
+            <div>
+              <p class="eyebrow">BUSINESS OVERVIEW</p>
+              <h1 id="page-title">Reports</h1>
+              <p class="page-subtitle">Sales, purchases, collections, returns, and current inventory at a glance.</p>
+            </div>
+            <button class="refresh-button" id="refresh-reports" type="button"><span aria-hidden="true">↻</span> Refresh</button>
+          </section>
+
+          <section class="report-filters" aria-label="Report date range">
+            <div class="report-presets" role="group" aria-label="Choose report period">
+              <button type="button" class="report-period-button is-selected" data-period="today" aria-pressed="true">Today</button>
+              <button type="button" class="report-period-button" data-period="last7" aria-pressed="false">Last 7 days</button>
+              <button type="button" class="report-period-button" data-period="month" aria-pressed="false">This month</button>
+              <button type="button" class="report-period-button" data-period="custom" aria-pressed="false">Custom range</button>
+            </div>
+            <div class="report-custom-range" id="custom-range" hidden>
+              <label>From <input id="report-from" type="date"></label>
+              <label>To <input id="report-to" type="date"></label>
+              <button class="secondary-button" id="apply-range" type="button">Apply</button>
+            </div>
+          </section>
+          <p class="report-date-note" id="report-date-note">Financial activity for today. Inventory figures are current.</p>
+          <p class="page-status" id="report-status" role="status" aria-live="polite">Loading reports…</p>
+
+          <section class="report-summary-grid" aria-label="Business summaries">
+            <article class="report-summary-card">
+              <p class="report-card-title">Sales</p>
+              <div class="report-metric"><span>Total sales</span><strong id="report-sales-total">—</strong></div>
+              <div class="report-metric"><span>Net sales after returns</span><strong id="report-sales-net">—</strong></div>
+              <div class="report-metric"><span>Completed sales</span><strong id="report-sales-count">—</strong></div>
+              <div class="report-metric"><span>Amount collected</span><strong id="report-sales-collected">—</strong></div>
+              <div class="report-metric"><span>Outstanding customer credit</span><strong id="report-sales-credit">—</strong></div>
+            </article>
+            <article class="report-summary-card">
+              <p class="report-card-title">Purchases</p>
+              <div class="report-metric"><span>Total purchase records</span><strong id="report-purchase-all-count">—</strong></div>
+              <div class="report-metric"><span>Received purchases</span><strong id="report-purchase-count">—</strong></div>
+              <div class="report-metric"><span>Total purchase value</span><strong id="report-purchase-total">—</strong></div>
+            </article>
+            <article class="report-summary-card">
+              <p class="report-card-title">Payments</p>
+              <div class="report-metric"><span>Total received</span><strong id="report-payment-total">—</strong></div>
+              <div class="report-metric"><span>Payment count</span><strong id="report-payment-count">—</strong></div>
+            </article>
+            <article class="report-summary-card">
+              <p class="report-card-title">Returns &amp; refunds</p>
+              <div class="report-metric"><span>Completed returns</span><strong id="report-return-count">—</strong></div>
+              <div class="report-metric"><span>Returned quantity</span><strong id="report-return-quantity">—</strong></div>
+              <div class="report-metric"><span>Returned value</span><strong id="report-return-value">—</strong></div>
+              <div class="report-metric"><span>Refunds</span><strong id="report-refunds">—</strong></div>
+            </article>
+            <article class="report-summary-card report-inventory-card">
+              <p class="report-card-title">Current inventory</p>
+              <div class="report-metric"><span>Products</span><strong id="report-product-count">—</strong></div>
+              <div class="report-metric"><span>Stock quantity</span><strong id="report-stock-quantity">—</strong></div>
+              <div class="report-metric"><span>Low stock</span><strong id="report-low-stock">—</strong></div>
+              <div class="report-metric"><span>Out of stock</span><strong id="report-out-stock">—</strong></div>
+              <div class="report-metric"><span>Retail inventory value</span><strong id="report-inventory-value">—</strong></div>
+            </article>
+          </section>
+
+          <section class="report-detail-grid" aria-label="Report details">
+            <article class="panel report-detail-panel">
+              <div class="panel-heading">
+                <div><h2>Payments by method</h2><p>Received payments in the selected period.</p></div>
+              </div>
+              <div class="table-wrap">
+                <table class="report-table">
+                  <thead><tr><th scope="col">Method</th><th scope="col" class="numeric">Payments</th><th scope="col" class="numeric">Amount</th></tr></thead>
+                  <tbody id="report-payment-methods"><tr><td class="empty-cell" colspan="3">Loading…</td></tr></tbody>
+                </table>
+              </div>
+            </article>
+            <article class="panel report-detail-panel">
+              <div class="panel-heading">
+                <div><h2>Top-selling products</h2><p>Net quantity sold after completed returns.</p></div>
+              </div>
+              <div class="table-wrap">
+                <table class="report-table">
+                  <thead><tr><th scope="col">Product</th><th scope="col" class="numeric">Net quantity sold</th></tr></thead>
+                  <tbody id="report-top-products"><tr><td class="empty-cell" colspan="2">Loading…</td></tr></tbody>
+                </table>
+              </div>
+            </article>
+            <article class="panel report-detail-panel report-low-stock-panel">
+              <div class="panel-heading">
+                <div><h2>Low-stock products</h2><p>Active products with 10 or fewer units currently available.</p></div>
+              </div>
+              <div class="table-wrap">
+                <table class="report-table">
+                  <thead><tr><th scope="col">Product</th><th scope="col">SKU</th><th scope="col" class="numeric">Current stock</th></tr></thead>
+                  <tbody id="report-low-stock-products"><tr><td class="empty-cell" colspan="3">Loading…</td></tr></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+          <footer class="page-footer">Stockly</footer>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

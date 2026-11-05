@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Create and receive supplier purchases in Stockly">
+    <title>Purchases | Stockly — Inventory Management</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/auth.js" defer></script>
+    <script src="./js/purchases.js" defer></script>
+  </head>
+  <body class="auth-pending" data-auth-guard="true">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="./index.html" aria-label="Stockly home">
+          <img class="brand-logo" src="./assets/stockly-logo.png" alt="Stockly Inventory Management">
+          <span class="brand-caption" aria-hidden="true">INVENTORY MANAGEMENT</span>
+        </a>
+
+        <p class="nav-heading">WORKSPACE</p>
+        <nav class="main-nav">
+          <a class="nav-link" href="./index.html#dashboard"><span class="nav-icon" aria-hidden="true">▦</span>Dashboard</a>
+          <a class="nav-link" href="./products.html"><span class="nav-icon" aria-hidden="true">▤</span>Products</a>
+          <a class="nav-link" href="./categories.html"><span class="nav-icon" aria-hidden="true">▣</span>Categories</a>
+          <a class="nav-link" href="./stock-adjustments.html"><span class="nav-icon" aria-hidden="true">↕</span>Stock Adjustments</a>
+          <a class="nav-link is-active" href="./purchases.html" aria-current="page"><span class="nav-icon" aria-hidden="true">⇧</span>Purchases</a>
+          <a class="nav-link" href="./sales.html"><span class="nav-icon" aria-hidden="true">⇩</span>Sales</a>
+          <a class="nav-link" href="./returns.html"><span class="nav-icon" aria-hidden="true">↩</span>Returns &amp; Refunds</a>
+          <a class="nav-link" href="./customers.html"><span class="nav-icon" aria-hidden="true">♙</span>Customers</a>
+          <a class="nav-link" href="./suppliers.html"><span class="nav-icon" aria-hidden="true">▧</span>Suppliers</a>
+          <a class="nav-link" href="./payments.html"><span class="nav-icon" aria-hidden="true">₹</span>Payments</a>
+          <a class="nav-link" href="./reports.html"><span class="nav-icon" aria-hidden="true">▥</span>Reports</a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a class="nav-link" href="./settings.html"><span class="nav-icon" aria-hidden="true">⚙</span>Settings</a>
+          <p>Inventory at a glance</p>
+        </div>
+      </aside>
+
+      <div class="main-column">
+        <header class="topbar">
+          <a class="mobile-brand" href="./index.html" aria-label="Stockly home"><img src="./assets/stockly-logo.png" alt="Stockly"></a>
+          <div class="topbar-spacer"></div>
+          <div class="profile" data-auth-account aria-label="Loading account">
+            <span class="profile-avatar" data-auth-avatar aria-hidden="true">…</span>
+            <span class="profile-details">
+              <span class="profile-name" data-auth-username>Loading account…</span>
+              <span class="profile-role" data-auth-role></span>
+            </span>
+            <button class="logout-button" type="button" data-auth-logout>Log out</button>
+          </div>
+        </header>
+
+        <main class="dashboard purchases-page">
+          <section class="page-heading" aria-labelledby="page-title">
+            <div>
+              <p class="eyebrow">INVENTORY</p>
+              <h1 id="page-title">Purchases</h1>
+              <p class="page-subtitle">Record supplier deliveries and add received goods to stock.</p>
+            </div>
+            <button class="primary-button" id="new-purchase-button" type="button">+ New purchase</button>
+          </section>
+
+          <p class="page-status" id="purchase-status" role="status" aria-live="polite">Loading purchases…</p>
+
+          <section class="panel purchases-panel" aria-label="Purchase list">
+            <div class="table-wrap">
+              <table class="purchases-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Purchase ID</th>
+                    <th scope="col">Supplier</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="numeric">Total amount</th>
+                    <th scope="col">Date</th>
+                    <th scope="col" class="actions-heading">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="purchases-body">
+                  <tr><td class="empty-cell" colspan="6">Loading purchases…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <footer class="page-footer">Stockly</footer>
+        </main>
+      </div>
+    </div>
+
+    <dialog class="product-dialog purchase-dialog" id="purchase-dialog" aria-labelledby="purchase-dialog-title">
+      <form id="purchase-form" novalidate>
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">PURCHASE DETAILS</p>
+            <h2 id="purchase-dialog-title">New purchase</h2>
+          </div>
+          <button class="dialog-close" id="close-purchase-dialog" type="button" aria-label="Close form">×</button>
+        </div>
+        <p class="form-message" id="purchase-form-message" role="alert" hidden></p>
+
+        <div class="form-row">
+          <label class="form-field">
+            <span>Supplier <span class="required-mark">*</span></span>
+            <select name="supplier_id" required>
+              <option value="">Select supplier</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="purchase-items-heading">
+          <div>
+            <h3>Items</h3>
+            <p>Select each product once; combine duplicate quantities.</p>
+          </div>
+          <button class="secondary-button" id="add-purchase-item" type="button">+ Add item</button>
+        </div>
+        <div class="table-wrap purchase-items-wrap">
+          <table class="purchase-entry-table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col" class="numeric">Quantity</th>
+                <th scope="col" class="numeric">Unit cost</th>
+                <th scope="col" class="numeric">Item total</th>
+                <th scope="col"><span class="visually-hidden">Remove</span></th>
+              </tr>
+            </thead>
+            <tbody id="purchase-item-rows"></tbody>
+          </table>
+        </div>
+        <div class="purchase-total-row">
+          <span>Purchase total</span>
+          <strong id="purchase-total">₹0.00</strong>
+        </div>
+        <p class="form-hint" id="purchase-form-hint">New purchases are saved as drafts and do not change stock. Receive the purchase after goods arrive.</p>
+
+        <div class="dialog-actions">
+          <button class="secondary-button" id="cancel-purchase-form" type="button">Cancel</button>
+          <button class="primary-button" id="save-purchase-button" type="submit">Save draft</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="product-dialog purchase-dialog purchase-detail-dialog" id="purchase-detail-dialog" aria-labelledby="purchase-detail-title">
+      <div class="purchase-details-content">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">PURCHASE RECORD</p>
+            <h2 id="purchase-detail-title">Purchase details</h2>
+          </div>
+          <button class="dialog-close" id="close-purchase-details" type="button" aria-label="Close details">×</button>
+        </div>
+        <p class="form-message" id="purchase-detail-message" role="alert" hidden></p>
+        <dl class="purchase-summary">
+          <div><dt>Supplier</dt><dd id="detail-supplier">—</dd></div>
+          <div><dt>Status</dt><dd id="detail-status">—</dd></div>
+          <div><dt>Purchase date</dt><dd id="detail-date">—</dd></div>
+        </dl>
+        <div class="table-wrap purchase-detail-items-wrap">
+          <table class="purchase-detail-items-table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">SKU</th>
+                <th scope="col" class="numeric">Quantity</th>
+                <th scope="col" class="numeric">Unit cost</th>
+                <th scope="col" class="numeric">Item total</th>
+              </tr>
+            </thead>
+            <tbody id="purchase-detail-items"></tbody>
+          </table>
+        </div>
+        <div class="purchase-total-row detail-total-row">
+          <span>Purchase total</span>
+          <strong id="detail-total">—</strong>
+        </div>
+        <div class="dialog-actions">
+          <button class="secondary-button" id="close-purchase-details-button" type="button">Close</button>
+        </div>
+      </div>
+    </dialog>
+  </body>
+</html>

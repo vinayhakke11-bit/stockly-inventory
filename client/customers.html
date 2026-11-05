@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Manage customer contacts and credit history in Stockly">
+    <title>Customers | Stockly — Inventory Management</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/auth.js" defer></script>
+    <script src="./js/customers.js" defer></script>
+  </head>
+  <body class="auth-pending" data-auth-guard="true">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="./index.html" aria-label="Stockly home">
+          <img class="brand-logo" src="./assets/stockly-logo.png" alt="Stockly Inventory Management">
+          <span class="brand-caption" aria-hidden="true">INVENTORY MANAGEMENT</span>
+        </a>
+
+        <p class="nav-heading">WORKSPACE</p>
+        <nav class="main-nav">
+          <a class="nav-link" href="./index.html#dashboard"><span class="nav-icon" aria-hidden="true">▦</span>Dashboard</a>
+          <a class="nav-link" href="./products.html"><span class="nav-icon" aria-hidden="true">▤</span>Products</a>
+          <a class="nav-link" href="./categories.html"><span class="nav-icon" aria-hidden="true">▣</span>Categories</a>
+          <a class="nav-link" href="./stock-adjustments.html"><span class="nav-icon" aria-hidden="true">↕</span>Stock Adjustments</a>
+          <a class="nav-link" href="./purchases.html"><span class="nav-icon" aria-hidden="true">⇧</span>Purchases</a>
+          <a class="nav-link" href="./sales.html"><span class="nav-icon" aria-hidden="true">⇩</span>Sales</a>
+          <a class="nav-link" href="./returns.html"><span class="nav-icon" aria-hidden="true">↩</span>Returns &amp; Refunds</a>
+          <a class="nav-link is-active" href="./customers.html" aria-current="page"><span class="nav-icon" aria-hidden="true">♙</span>Customers</a>
+          <a class="nav-link" href="./suppliers.html"><span class="nav-icon" aria-hidden="true">▧</span>Suppliers</a>
+          <a class="nav-link" href="./payments.html"><span class="nav-icon" aria-hidden="true">₹</span>Payments</a>
+          <a class="nav-link" href="./reports.html"><span class="nav-icon" aria-hidden="true">▥</span>Reports</a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a class="nav-link" href="./settings.html"><span class="nav-icon" aria-hidden="true">⚙</span>Settings</a>
+          <p>Inventory at a glance</p>
+        </div>
+      </aside>
+
+      <div class="main-column">
+        <header class="topbar">
+          <a class="mobile-brand" href="./index.html" aria-label="Stockly home"><img src="./assets/stockly-logo.png" alt="Stockly"></a>
+          <div class="topbar-spacer"></div>
+          <div class="profile" data-auth-account aria-label="Loading account">
+            <span class="profile-avatar" data-auth-avatar aria-hidden="true">…</span>
+            <span class="profile-details">
+              <span class="profile-name" data-auth-username>Loading account…</span>
+              <span class="profile-role" data-auth-role></span>
+            </span>
+            <button class="logout-button" type="button" data-auth-logout>Log out</button>
+          </div>
+        </header>
+
+        <main class="dashboard customers-page">
+          <section class="page-heading" aria-labelledby="page-title">
+            <div>
+              <p class="eyebrow">CUSTOMER ACCOUNTS</p>
+              <h1 id="page-title">Customers</h1>
+              <p class="page-subtitle">Manage customer details and review outstanding balances.</p>
+            </div>
+            <div class="customer-page-actions">
+              <button class="secondary-button" id="refresh-customers" type="button">Refresh</button>
+              <button class="primary-button" id="add-customer-button" type="button">+ Add customer</button>
+            </div>
+          </section>
+
+          <div class="product-toolbar">
+            <label class="search-field">
+              <span class="visually-hidden">Search customers</span>
+              <span class="search-icon" aria-hidden="true">⌕</span>
+              <input id="customer-search" type="search" placeholder="Search by name, phone, or email" autocomplete="off">
+            </label>
+            <span class="result-count" id="customer-result-count" aria-live="polite"></span>
+          </div>
+
+          <p class="page-status" id="customer-status" role="status" aria-live="polite">Loading customers…</p>
+
+          <section class="panel customers-panel" aria-label="Customer list">
+            <div class="table-wrap">
+              <table class="customers-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Email</th>
+                    <th scope="col" class="numeric">Outstanding credit</th>
+                    <th scope="col" class="actions-heading">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="customers-body">
+                  <tr><td class="empty-cell" colspan="5">Loading customers…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <footer class="page-footer">Stockly</footer>
+        </main>
+      </div>
+    </div>
+
+    <dialog class="product-dialog customer-dialog" id="customer-dialog" aria-labelledby="customer-dialog-title">
+      <form id="customer-form" novalidate>
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">CUSTOMER DETAILS</p>
+            <h2 id="customer-dialog-title">Add customer</h2>
+          </div>
+          <button class="dialog-close" id="close-customer-dialog" type="button" aria-label="Close form">×</button>
+        </div>
+        <p class="form-message" id="customer-form-message" role="alert" hidden></p>
+
+        <label class="form-field">
+          <span>Customer name <span class="required-mark">*</span></span>
+          <input name="name" type="text" maxlength="150" required autocomplete="name">
+        </label>
+        <div class="form-row">
+          <label class="form-field">
+            <span>Phone</span>
+            <input name="phone" type="tel" maxlength="30" autocomplete="tel" inputmode="tel">
+          </label>
+          <label class="form-field">
+            <span>Email</span>
+            <input name="email" type="email" maxlength="255" autocomplete="email">
+          </label>
+        </div>
+        <label class="form-field">
+          <span>Address</span>
+          <textarea name="address" rows="3" autocomplete="street-address"></textarea>
+        </label>
+        <p class="form-hint">Phone, email, and address are optional. A duplicate customer with identical details cannot be added.</p>
+
+        <div class="dialog-actions">
+          <button class="secondary-button" id="cancel-customer-form" type="button">Cancel</button>
+          <button class="primary-button" id="save-customer-button" type="submit">Save customer</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="product-dialog customer-detail-dialog" id="customer-detail-dialog" aria-labelledby="customer-detail-title">
+      <div class="customer-detail-content">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">CUSTOMER ACCOUNT</p>
+            <h2 id="customer-detail-title">Customer details</h2>
+          </div>
+          <button class="dialog-close" id="close-customer-details" type="button" aria-label="Close customer details">×</button>
+        </div>
+        <p class="page-status" id="customer-detail-status" role="status" aria-live="polite">Loading account…</p>
+        <dl class="customer-contact-grid">
+          <div><dt>Phone</dt><dd id="detail-customer-phone">—</dd></div>
+          <div><dt>Email</dt><dd id="detail-customer-email">—</dd></div>
+          <div class="customer-address"><dt>Address</dt><dd id="detail-customer-address">—</dd></div>
+        </dl>
+        <section class="customer-credit-summary" aria-label="Credit summary">
+          <div><span>Outstanding credit</span><strong id="detail-outstanding-credit">—</strong></div>
+          <div><span>Total debit</span><strong id="detail-total-debit">—</strong></div>
+          <div><span>Total credit</span><strong id="detail-total-credit">—</strong></div>
+        </section>
+        <h3 class="customer-history-heading">Credit transaction history</h3>
+        <p class="customer-history-note">Charges increase the balance; payments and returns reduce it. Refunds are shown as debit entries.</p>
+        <div class="table-wrap customer-history-wrap">
+          <table class="customer-history-table">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Transaction</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Sale</th>
+                <th scope="col">Payment reference</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody id="customer-history-body">
+              <tr><td class="empty-cell" colspan="6">Loading history…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dialog-actions">
+          <button class="secondary-button" id="close-customer-details-button" type="button">Close</button>
+        </div>
+      </div>
+    </dialog>
+  </body>
+</html>
