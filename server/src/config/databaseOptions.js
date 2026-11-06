@@ -17,7 +17,7 @@ function parseDatabaseSsl(env) {
     return false;
   }
 
-  const ssl = { rejectUnauthorized: true };
+  const ssl = { rejectUnauthorized: false };
   if (!caSetting) {
     return ssl;
   }
